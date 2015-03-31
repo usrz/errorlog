@@ -1,6 +1,5 @@
 {
   "name": "errorlog",
-  "private": true,
   "version": "1.0.0",
   "description": "Yet another logger for Node",
   "repository": "https://github.com/usrz/errorlog",
