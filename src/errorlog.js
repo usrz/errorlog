@@ -58,7 +58,7 @@ function wrap(stream) {
 };
 
 // Our default stream, shared where not overridden
-var defaultLog = process.stderr.write.bind(process.stderr);
+var defaultLog = wrap(process.stderr);
 
 // Simple log emitter
 function simplelog(options) {
