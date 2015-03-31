@@ -1,9 +1,24 @@
 {
   "name": "errorlog",
-  "version": "1.0.0",
   "description": "Yet another logger for Node",
-  "repository": "https://github.com/usrz/errorlog",
+  "version": "1.0.1",
+  "author": {
+    "name": "Pier Fumagalli",
+    "email": "pier@usrz.com"
+  },
   "main": "src/errorlog.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/usrz/js-errorlog"
+  },
+  "homepage": "https://github.com/usrz/js-express-errorlog",
+  "keywords": [
+    "error",
+    "errorlog",
+    "logging",
+    "log"
+  ],
   "devDependencies": {
     "chai": "^2.2.0",
     "express": "^4.12.3",
