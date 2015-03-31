@@ -13,7 +13,6 @@ function Stream() {
     data += string;
   }
   this.check = function check() {
-    console.log(data);
     var s = data;
     data = '';
     // Expect to match iso date
