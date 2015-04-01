@@ -57,15 +57,25 @@ function wrap(stream) {
   }
 };
 
-// Our default stream, shared where not overridden
+// Logging levels
+var ALL   =  -1;
+var DEBUG = 100;
+var INFO  = 200;
+var WARN  = 300;
+var ERROR = 400;
+var OFF   = Number.MAX_SAFE_INTEGER;
+
+// Our default log function, shared where not overridden
 var defaultLog = wrap(process.stderr);
+var defaultLevel = INFO;
 
 // Simple log emitter
 function simplelog(options) {
   options = options || {};
 
-  var log = defaultLog;
   var category = null;
+  var log = defaultLog;
+  var level = defaultLevel;
 
   // Looks like a stream, just bind it
   if (typeof(options.write) === 'function') {
@@ -84,30 +94,52 @@ function simplelog(options) {
 
   // Object: may contain "logger" and "category"
   else if (typeof(options) === 'object') {
+    if (options.category) category = String(options.category) || null;
+    if (options.level) level = Number(options.level) || defaultLevel;
     if (options.logger) log = wrap(options.logger);
-    category = options.category || null;
   }
 
   // Anything else is a big no-no
   else throw new Error('Must be called with a string, function, Writable or options');
 
-  // Our emitter function wotj categories
-  if (category) return function emit() {
-    log(category + ' - ' + format.apply(null, arguments));
-  }
+  // Our emitter function with or without categories
+  var emit = category ?
+    function emit() { log(category + ' - ' + format.apply(null, arguments)) } :
+    function emit() { log(format.apply(null, arguments)) } ;
 
-  // Plain boring emitter function
-  return function emit() {
-    log(format.apply(null, arguments));
-  }
+  // Return our logging function
+  var logger   = function log()   { if (level <= ERROR) emit.apply(null, arguments) }
+  logger.debug = function debug() { if (level <= DEBUG) emit.apply(null, arguments) }
+  logger.info  = function info()  { if (level <= INFO)  emit.apply(null, arguments) }
+  logger.warn  = function warn()  { if (level <= WARN)  emit.apply(null, arguments) }
+  logger.error = function error() { if (level <= ERROR) emit.apply(null, arguments) }
+  return logger;
+
 }
 
 // Prepare our exports
 exports = module.exports = simplelog;
 exports.format = format;
-Object.defineProperty(exports, 'defaultLog', {
-  configurable: false,
-  enumerable: true,
-  get: function() { return defaultLog },
-  set: function(log) { defaultLog = wrap(log) }
+Object.defineProperties(exports, {
+  // Levels
+  'ALL':   { configurable: false, enumerable: true, writable: false, value: ALL   },
+  'DEBUG': { configurable: false, enumerable: true, writable: false, value: DEBUG },
+  'INFO':  { configurable: false, enumerable: true, writable: false, value: INFO  },
+  'WARN':  { configurable: false, enumerable: true, writable: false, value: WARN  },
+  'ERROR': { configurable: false, enumerable: true, writable: false, value: ERROR },
+  'OFF':   { configurable: false, enumerable: true, writable: false, value: OFF   },
+  // Defaults
+  'defaultLog': {
+    configurable: false,
+    enumerable: true,
+    get: function() { return defaultLog },
+    set: function(log) { defaultLog = wrap(log) }
+  },
+  'defaultLevel': {
+    configurable: false,
+    enumerable: true,
+    get: function() { return defaultLevel },
+    set: function(level) { defaultLevel = Number(level) || ERROR }
+  },
+
 });

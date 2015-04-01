@@ -29,6 +29,18 @@ var log = simplelog();
 
 describe('Simple log test', function() {
 
+  it('should expose some basic properties', function() {
+    expect(simplelog).to.be.a('function');
+    expect(simplelog.ALL  ).to.equal( -1);
+    expect(simplelog.DEBUG).to.equal(100);
+    expect(simplelog.INFO ).to.equal(200);
+    expect(simplelog.WARN ).to.equal(300);
+    expect(simplelog.ERROR).to.equal(400);
+    expect(simplelog.OFF  )  .to.equal(Number.MAX_SAFE_INTEGER);
+    expect(simplelog.defaultLog).to.be.a('function');
+    expect(simplelog.defaultLevel).to.equal(simplelog.INFO);
+  });
+
   it('should log a simple message', function() {
     log('a simple message to log');
     expect(stream.check()).to.equal('a simple message to log');
@@ -106,5 +118,76 @@ describe('Simple log test', function() {
     expect(data).to.equal('foobar - different logger');
   })
 
+  it('should honor the ALL level', function() {
+    var data = [];
+    var append = function(more) { data.push(more) };
+    var logger = simplelog({level: simplelog.ALL, logger: append});
+    logger.debug('DEBUG');
+    logger.info ('INFO');
+    logger.warn ('WARN');
+    logger.error('ERROR');
+    logger('DEFAULT');
+    expect(data).to.eql(['DEBUG','INFO','WARN','ERROR','DEFAULT']);
+  })
+
+  it('should honor the DEBUG level', function() {
+    var data = [];
+    var append = function(more) { data.push(more) };
+    var logger = simplelog({level: simplelog.DEBUG, logger: append});
+    logger.debug('DEBUG');
+    logger.info ('INFO');
+    logger.warn ('WARN');
+    logger.error('ERROR');
+    logger('DEFAULT');
+    expect(data).to.eql(['DEBUG','INFO','WARN','ERROR','DEFAULT']);
+  })
+
+  it('should honor the INFO level', function() {
+    var data = [];
+    var append = function(more) { data.push(more) };
+    var logger = simplelog({level: simplelog.INFO, logger: append});
+    logger.debug('DEBUG');
+    logger.info ('INFO');
+    logger.warn ('WARN');
+    logger.error('ERROR');
+    logger('DEFAULT');
+    expect(data).to.eql(['INFO','WARN','ERROR','DEFAULT']);
+  })
+
+  it('should honor the WARN level', function() {
+    var data = [];
+    var append = function(more) { data.push(more) };
+    var logger = simplelog({level: simplelog.WARN, logger: append});
+    logger.debug('DEBUG');
+    logger.info ('INFO');
+    logger.warn ('WARN');
+    logger.error('ERROR');
+    logger('DEFAULT');
+    expect(data).to.eql(['WARN','ERROR','DEFAULT']);
+  })
+
+  it('should honor the ERROR level', function() {
+    var data = [];
+    var append = function(more) { data.push(more) };
+    var logger = simplelog({level: simplelog.ERROR, logger: append});
+    logger.debug('DEBUG');
+    logger.info ('INFO');
+    logger.warn ('WARN');
+    logger.error('ERROR');
+    logger('DEFAULT');
+    expect(data).to.eql(['ERROR','DEFAULT']);
+  })
+
+  it('should honor the OFF level', function() {
+    var data = [];
+    var append = function(more) { data.push(more) };
+    var logger = simplelog({level: simplelog.OFF, logger: append});
+    logger.debug('DEBUG');
+    logger.info ('INFO');
+    logger.warn ('WARN');
+    logger.error('ERROR');
+    logger('DEFAULT');
+    expect(data).to.eql([]);
+  })
 });
 

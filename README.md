@@ -5,7 +5,9 @@ A very simple error logger/formatter for Node.
 
 * [Install and use](#install-and-use)
 * [Options and properties](#options-and-properties)
+  * [Default Logger and Level](#default-logger-and-level)
 * [Logging](#logging)
+  * [Levels](#levels)
   * [Extras](#extras)
   * [Log rotation](#log-rotation)
 * [License (MIT)](#license-mit-)
@@ -45,13 +47,21 @@ The _error log_ can be constructed with the following options:
   * a simple `function` that will be invoked once with each message to log.
   * if unspecified this will default to `process.stderr`.
 * `category`: a category name that will be inserted in the message to log.
+* `level`: the minimum level to log messages at
+  * `errorlog.DEBUG` or `100`: debugging messages.
+  * `errorlog.INFO`  or `200`: informational messages _(default)_.
+  * `errorlog.WARN`  or `300`: warning messages.
+  * `errorlog.ERROR` or `400`: error messages.
+  * `errorlog.ALL` or any number smaller than `100`: everything is logged.
+  * `errorlog.OFF` or any number greater than `400`: disable logging.
 
 Options can be specified at construction wrapped in a simple object:
 
 ```javascript
 require('errorlog')({
   logger: process.stdout,
-  category: 'my category'
+  category: 'my category',
+  level: 200
 });
 ```
 
@@ -67,7 +77,7 @@ var errorlog = require('errorlog');
 var log = errorlog(winston.error);
 ```
 
-#### Default Logger
+#### Default Logger and Level
 
 The **default** `Writable` _stream_ or logging `function` can be configured
 using the `defaultLog` property:
@@ -75,13 +85,15 @@ using the `defaultLog` property:
 ```javascript
 var errorlog = require('errorlog');
 errorlog.defaultLog = process.stdout;
+errorlog.defaultLevel = errorlog.DEBUG;
 
 // All logs will use `process.stdout` unless overridden
 var log = errorlog('my category');
+log('A message to log');
 ```
 
-The default for this property is `process.stderr`, and it will affect all
-loggers created **after** setting it.
+The default for output will be `process.stderr` and minimum level `ERROR`:
+these values will be applied only to loggers created **after** setting them.
 
 
 
@@ -99,6 +111,22 @@ This will produce an entry like
 ```text
 2015-03-31T13:58:06.601Z - I have 3 apples and an object {"foo":"bar"}
 ```
+
+#### Levels
+
+Logging levels are associated to various functions of the logger, for example:
+
+```javascript
+var errorlog = require('errorlog');
+var log = errorlog({...});
+
+log('Default, logged as ERROR');
+log.debug('A debug message');
+log.info('Informational message');
+log.warn('Some sort of warning');
+log.error('Like calling log(...)');
+```
+
 
 #### Extras
 
