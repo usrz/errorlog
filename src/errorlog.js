@@ -1,12 +1,14 @@
 'use strict';
 
+var util = require('util');
+
 function format() {
   var arg = arguments;
   var msg = '';
   var ptr = 0;
 
   // Process the format string and parameters
-  if (typeof(arg[0]) === 'string') {
+  if (util.isString(arg[0])) {
     var len = arg.length - 1;
     msg += arg[0].replace(/%[sdj%]/g, function(val) {
       if (ptr >= len) return val;
@@ -46,11 +48,11 @@ function format() {
 }
 
 function wrap(stream) {
-  if (typeof(stream.write) === 'function') {
+  if (util.isFunction(stream.write)) {
     return function log(message) {
       stream.write(new Date().toISOString() + ' - ' + message + '\n');
     }
-  } else if (typeof(stream) === 'function') {
+  } else if (util.isFunction(stream)) {
     return stream;
   } else {
     throw new Error('The "logger" must be a function or Writable stream');
@@ -64,6 +66,7 @@ var INFO  = 200;
 var WARN  = 300;
 var ERROR = 400;
 var OFF   = Number.MAX_SAFE_INTEGER;
+var LOG   = OFF - 1; // internal only
 
 // Our default log function, shared where not overridden
 var defaultLog = wrap(process.stderr);
@@ -78,22 +81,22 @@ function simplelog(options) {
   var level = defaultLevel;
 
   // Looks like a stream, just bind it
-  if (typeof(options.write) === 'function') {
+  if (util.isFunction(options.write)) {
     log = wrap(options);
   }
 
   // Simple function, use for logging
-  else if (typeof(options) === 'function') {
+  else if (util.isFunction(options)) {
     log = options;
   }
 
   // String only, must be a category name
-  else if (typeof(options) === 'string') {
+  else if (util.isString(options)) {
     category = options || null;
   }
 
   // Object: may contain "logger" and "category"
-  else if (typeof(options) === 'object') {
+  else if (util.isObject(options)) {
     if (options.category) category = String(options.category) || null;
     if (options.level) level = Number(options.level) || defaultLevel;
     if (options.logger) log = wrap(options.logger);
@@ -103,16 +106,37 @@ function simplelog(options) {
   else throw new Error('Must be called with a string, function, Writable or options');
 
   // Our emitter function with or without categories
-  var emit = category ?
-    function emit() { log(category + ' - ' + format.apply(null, arguments)) } :
-    function emit() { log(format.apply(null, arguments)) } ;
+  function emit(logLevel, args) {
+    if (logLevel < level) return;
+
+    var data = [ format.apply(null, args) ];
+
+    if (category) {
+      data.unshift(': ');
+      data.unshift(category);
+    }
+
+    var levelString;
+    if      (logLevel <= DEBUG) levelString = 'DEBUG - ';
+    else if (logLevel <= INFO)  levelString = ' INFO - ';
+    else if (logLevel <= WARN)  levelString = ' WARN - ';
+    else if (logLevel <= ERROR) levelString = 'ERROR - ';
+    else                        levelString = '  LOG - ';
+
+    data.unshift(levelString);
+
+    log(data.join(''));
+  }
+  // var emit = category ?
+  //   function emit(level, args) { log(level + category + ': ' + format.apply(null, args)) } :
+  //   function emit(level, args) { log(level + format.apply(null, args)) } ;
 
   // Return our logging function
-  var logger   = function log()   { if (level <= ERROR) emit.apply(null, arguments) }
-  logger.debug = function debug() { if (level <= DEBUG) emit.apply(null, arguments) }
-  logger.info  = function info()  { if (level <= INFO)  emit.apply(null, arguments) }
-  logger.warn  = function warn()  { if (level <= WARN)  emit.apply(null, arguments) }
-  logger.error = function error() { if (level <= ERROR) emit.apply(null, arguments) }
+  var logger   = function log()   { emit(LOG,   arguments) }
+  logger.debug = function debug() { emit(DEBUG, arguments) }
+  logger.info  = function info()  { emit(INFO,  arguments) }
+  logger.warn  = function warn()  { emit(WARN,  arguments) }
+  logger.error = function error() { emit(ERROR, arguments) }
   return logger;
 
 }
