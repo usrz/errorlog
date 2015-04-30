@@ -77,8 +77,8 @@ function simplelog(options) {
   options = options || {};
 
   var category = null;
-  var log = defaultLog;
-  var level = defaultLevel;
+  var level = null;
+  var log = null;
 
   // Looks like a stream, just bind it
   if (util.isFunction(options.write)) {
@@ -98,7 +98,7 @@ function simplelog(options) {
   // Object: may contain "logger" and "category"
   else if (util.isObject(options)) {
     if (options.category) category = String(options.category) || null;
-    if (options.level) level = Number(options.level) || defaultLevel;
+    if (options.level) level = Number(options.level) || null;
     if (options.logger) log = wrap(options.logger);
   }
 
@@ -107,7 +107,7 @@ function simplelog(options) {
 
   // Our emitter function with or without categories
   function emit(logLevel, args) {
-    if (logLevel < level) return;
+    if (logLevel < (level || defaultLevel)) return;
 
     var data = [ format.apply(null, args) ];
 
@@ -125,11 +125,8 @@ function simplelog(options) {
 
     data.unshift(levelString);
 
-    log(data.join(''));
+    (log || defaultLog)(data.join(''));
   }
-  // var emit = category ?
-  //   function emit(level, args) { log(level + category + ': ' + format.apply(null, args)) } :
-  //   function emit(level, args) { log(level + format.apply(null, args)) } ;
 
   // Return our logging function
   var logger   = function log()   { emit(LOG,   arguments) }

@@ -189,5 +189,54 @@ describe('Simple log test', function() {
     logger('log');
     expect(data).to.eql([]);
   })
+
+  it('should honor switches in the default level', function() {
+    var data = [];
+    var append = function(more) { data.push(more) };
+
+    var oldLevel = simplelog.defaultLevel;
+    try {
+
+      simplelog.defaultLevel = simplelog.OFF;
+      var logger = simplelog({logger: append});
+
+      logger('this should not show up');
+      expect(data).to.eql([]);
+
+      simplelog.defaultLevel = simplelog.ALL;
+      logger('this must show up');
+      expect(data).to.eql(['  LOG - this must show up']);
+
+    } finally {
+      simplelog.defaultLevel = oldLevel;
+    }
+  })
+
+  it('should honor switches in the default log', function() {
+    var data1 = [];
+    var data2 = [];
+    var append1 = function(more) { data1.push(more) };
+    var append2 = function(more) { data2.push(more) };
+
+    var oldLog = simplelog.defaultLog;
+    try {
+      simplelog.defaultLog = append1;
+
+      var logger = simplelog();
+
+      logger('logged to data 1');
+
+      simplelog.defaultLog = append2;
+
+      logger('logged to data 2');
+
+      expect(data1).to.eql(['  LOG - logged to data 1']);
+      expect(data2).to.eql(['  LOG - logged to data 2']);
+
+    } finally {
+      simplelog.defaultLog = oldLog;
+    }
+  })
+
 });
 
