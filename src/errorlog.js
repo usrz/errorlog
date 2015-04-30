@@ -49,9 +49,17 @@ function format() {
 
 function wrap(stream) {
   if (util.isFunction(stream.write)) {
-    return function log(message) {
+    var colorize = (stream == process.stderr) || (stream == process.stdout);
+    if (! colorize) return function log(message) {
       stream.write(new Date().toISOString() + ' - ' + message + '\n');
     }
+
+    var log = function colorizedLog(message) {
+      stream.write('\x1B[38;5;240m' + new Date().toISOString() + '\x1B[0m - ' + message + '\n');
+    }
+    log.colorize = true;
+    return log;
+
   } else if (util.isFunction(stream)) {
     return stream;
   } else {
@@ -109,23 +117,43 @@ function simplelog(options) {
   function emit(logLevel, args) {
     if (logLevel < (level || defaultLevel)) return;
 
+    var currentLog = log || defaultLog;
+    var colorize = currentLog.colorize || false;
+
     var data = [ format.apply(null, args) ];
 
     if (category) {
       data.unshift(': ');
+      if (colorize) data.unshift('\x1B[0m');
       data.unshift(category);
+      if (colorize) {
+      if      (logLevel <= DEBUG) data.unshift('\x1B[38;5;25;4m');
+      else if (logLevel <= INFO)  data.unshift('\x1B[38;5;70;4m');
+      else if (logLevel <= WARN)  data.unshift('\x1B[38;5;100;4m');
+      else if (logLevel <= ERROR) data.unshift('\x1B[38;5;131;4m');
+      else                        data.unshift('\x1B[38;5;37;4m');
+      }
     }
 
-    var levelString;
-    if      (logLevel <= DEBUG) levelString = 'DEBUG - ';
-    else if (logLevel <= INFO)  levelString = ' INFO - ';
-    else if (logLevel <= WARN)  levelString = ' WARN - ';
-    else if (logLevel <= ERROR) levelString = 'ERROR - ';
-    else                        levelString = '  LOG - ';
+    data.unshift(' - ');
 
-    data.unshift(levelString);
+    if (colorize) data.unshift('\x1B[0m');
 
-    (log || defaultLog)(data.join(''));
+    if      (logLevel <= DEBUG) data.unshift('DEBUG');
+    else if (logLevel <= INFO)  data.unshift(' INFO');
+    else if (logLevel <= WARN)  data.unshift(' WARN');
+    else if (logLevel <= ERROR) data.unshift('ERROR');
+    else                        data.unshift('  LOG');
+
+    if (colorize === true) {
+      if      (logLevel <= DEBUG) data.unshift('\x1B[38;5;33m');
+      else if (logLevel <= INFO)  data.unshift('\x1B[38;5;76m');
+      else if (logLevel <= WARN)  data.unshift('\x1B[38;5;142m');
+      else if (logLevel <= ERROR) data.unshift('\x1B[38;5;167m');
+      else                        data.unshift('\x1B[38;5;44m');
+    }
+
+    currentLog(data.join(''));
   }
 
   // Return our logging function
