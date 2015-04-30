@@ -155,16 +155,9 @@ Will produce something like
 #### Colorization
 
 If the configured `log` is either `process.stderr` (the default) or
-`process.stderr`, the output to the console will be colorized somewhat
-like this:
+`process.stderr`, the output to the console will be colorized.
 
-<pre>
-<span style="color: #999;">2015-04-30T09:12:04.771Z</span> - <span style="color: #089;">  LOG</span> -  <span style="text-decoration: underline; color: #089;">my category</span>: I have 2 mangoes
-<span style="color: #999;">2015-04-30T09:12:04.771Z</span> - <span style="color: #00f;">DEBUG</span> -  <span style="text-decoration: underline; color: #00f;">my category</span>: A debug message
-<span style="color: #999;">2015-04-30T09:12:04.771Z</span> - <span style="color: #0a0;"> INFO</span> -  <span style="text-decoration: underline; color: #0a0;">my category</span>: Informational message
-<span style="color: #999;">2015-04-30T09:12:04.771Z</span> - <span style="color: #990;"> WARN</span> -  <span style="text-decoration: underline; color: #990;">my category</span>: Some sort of warning
-<span style="color: #999;">2015-04-30T09:12:04.771Z</span> - <span style="color: #f00;">ERROR</span> -  <span style="text-decoration: underline; color: #f00;">my category</span>: Something is wrong
-</pre>
+> And now I wish GitHub didn't filter the `style` attribute...
 
 This behavior can be changed by setting the `errorlog.defaultColorize` property
 to `false`.
