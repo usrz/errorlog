@@ -9,6 +9,7 @@ A very simple error logger/formatter for Node.
 * [Logging](#logging)
   * [Levels](#levels)
   * [Extras](#extras)
+  * [Colorization](#colorization)
   * [Log rotation](#log-rotation)
 * [License (MIT)](#license-mit-)
 
@@ -103,14 +104,15 @@ Logging
 Needless to say, logging follow the standard `util.format` scheme:
 
 ```javascript
-log('I have %d %s, and an object %j', 3, 'apples', { foo: 'bar' });
+log.debug('I have %d %s, and an object %j', 3, 'apples', { foo: 'bar' });
 ```
 
 This will produce an entry like
 
 ```text
-2015-03-31T13:58:06.601Z - I have 3 apples and an object {"foo":"bar"}
+2015-03-31T13:58:06.601Z - DEBUG - I have 3 apples and an object {"foo":"bar"}
 ```
+
 
 #### Levels
 
@@ -120,7 +122,7 @@ Logging levels are associated to various functions of the logger, for example:
 var errorlog = require('errorlog');
 var log = errorlog({...});
 
-log('Default, logged as ERROR');
+log('Default, logged unless everything is OFF');
 log.debug('A debug message');
 log.info('Informational message');
 log.warn('Some sort of warning');
@@ -136,18 +138,46 @@ JSON format, and errors will have their stack traces logged, too. For example:
 ```javascript
 var extra = { key: 'a simple value' };
 var error = new Error('This is an error');
-log('I have %d %s', 3, 'apples', extra, error);
+log.error('I have %d %s', 3, 'apples', extra, error);
 ```
 
 Will produce something like
 
 ```text
-2015-03-30T16:45:01.718Z - I have 3 apples
+2015-03-30T16:45:01.718Z - ERROR - I have 3 apples
   >>> {"key":"a simple value"}
   Error: This is an error
     at Error (native)
     at ... stacktrace continues ...
 ```
+
+
+#### Colorization
+
+If the configured `log` is either `process.stderr` (the default) or
+`process.stderr`, the output to the console will be colorized somewhat
+like this:
+
+<pre>
+<span style="color: #999;">2015-04-30T09:12:04.771Z</span> - <span style="color: #089;">  LOG</span> -  <span style="text-decoration: underline; color: #089;">my category</span>: I have 2 mangoes
+<span style="color: #999;">2015-04-30T09:12:04.771Z</span> - <span style="color: #00f;">DEBUG</span> -  <span style="text-decoration: underline; color: #00f;">my category</span>: A debug message
+<span style="color: #999;">2015-04-30T09:12:04.771Z</span> - <span style="color: #0a0;"> INFO</span> -  <span style="text-decoration: underline; color: #0a0;">my category</span>: Informational message
+<span style="color: #999;">2015-04-30T09:12:04.771Z</span> - <span style="color: #990;"> WARN</span> -  <span style="text-decoration: underline; color: #990;">my category</span>: Some sort of warning
+<span style="color: #999;">2015-04-30T09:12:04.771Z</span> - <span style="color: #f00;">ERROR</span> -  <span style="text-decoration: underline; color: #f00;">my category</span>: Something is wrong
+</pre>
+
+This behavior can be changed by setting the `errorlog.defaultColorize` property
+to `false`.
+
+```javascript
+var errorlog = require('errorlog');
+errorlog.defaultColorize = false;
+
+log('There you go, some bland output...');
+```
+
+To get an idea of the output, simply run the `sample.js` included here.
+
 
 #### Log rotation
 

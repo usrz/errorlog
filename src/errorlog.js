@@ -47,26 +47,6 @@ function format() {
   return msg;
 }
 
-function wrap(stream) {
-  if (util.isFunction(stream.write)) {
-    var colorize = (stream == process.stderr) || (stream == process.stdout);
-    if (! colorize) return function log(message) {
-      stream.write(new Date().toISOString() + ' - ' + message + '\n');
-    }
-
-    var log = function colorizedLog(message) {
-      stream.write('\x1B[38;5;240m' + new Date().toISOString() + '\x1B[0m - ' + message + '\n');
-    }
-    log.colorize = true;
-    return log;
-
-  } else if (util.isFunction(stream)) {
-    return stream;
-  } else {
-    throw new Error('The "logger" must be a function or Writable stream');
-  }
-};
-
 // Logging levels
 var ALL   =  -1;
 var DEBUG = 100;
@@ -79,6 +59,27 @@ var LOG   = OFF - 1; // internal only
 // Our default log function, shared where not overridden
 var defaultLog = wrap(process.stderr);
 var defaultLevel = INFO;
+var defaultColorize = true;
+
+function wrap(stream) {
+  if (util.isFunction(stream.write)) {
+    var colorize = ((stream == process.stderr) || (stream == process.stdout));
+    var log = function log(message) {
+      if (colorize && defaultColorize) {
+        stream.write('\x1B[38;5;240m' + new Date().toISOString() + '\x1B[0m - ' + message + '\n');
+      } else {
+        stream.write(new Date().toISOString() + ' - ' + message + '\n');
+      }
+    }
+    log.colorize = true;
+    return log;
+
+  } else if (util.isFunction(stream)) {
+    return stream;
+  } else {
+    throw new Error('The "logger" must be a function or Writable stream');
+  }
+};
 
 // Simple log emitter
 function simplelog(options) {
@@ -118,7 +119,7 @@ function simplelog(options) {
     if (logLevel < (level || defaultLevel)) return;
 
     var currentLog = log || defaultLog;
-    var colorize = currentLog.colorize || false;
+    var colorize = (currentLog.colorize || false) && defaultColorize;
 
     var data = [ format.apply(null, args) ];
 
@@ -189,6 +190,12 @@ Object.defineProperties(exports, {
     enumerable: true,
     get: function() { return defaultLevel },
     set: function(level) { defaultLevel = Number(level) || ERROR }
+  },
+  'defaultColorize': {
+    configurable: false,
+    enumerable: true,
+    get: function() { return defaultColorize },
+    set: function(level) { defaultColorize = Boolean(level) }
   },
 
 });
