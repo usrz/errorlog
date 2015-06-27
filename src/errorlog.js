@@ -49,10 +49,12 @@ function format() {
 
 // Logging levels
 var ALL   =  -1;
+var TRACE =   0;
 var DEBUG = 100;
 var INFO  = 200;
 var WARN  = 300;
 var ERROR = 400;
+var FATAL = 500;
 var OFF   = Number.MAX_SAFE_INTEGER;
 var LOG   = OFF - 1; // internal only
 
@@ -128,10 +130,12 @@ function simplelog(options) {
       if (colorize) data.unshift('\x1B[0m');
       data.unshift(category);
       if (colorize) {
-      if      (logLevel <= DEBUG) data.unshift('\x1B[38;5;25;4m');
+      if      (logLevel <= TRACE) data.unshift('\x1B[38;5;23;4m');
+      else if (logLevel <= DEBUG) data.unshift('\x1B[38;5;25;4m');
       else if (logLevel <= INFO)  data.unshift('\x1B[38;5;70;4m');
       else if (logLevel <= WARN)  data.unshift('\x1B[38;5;100;4m');
       else if (logLevel <= ERROR) data.unshift('\x1B[38;5;131;4m');
+      else if (logLevel <= FATAL) data.unshift('\x1B[38;5;124;4m');
       else                        data.unshift('\x1B[38;5;37;4m');
       }
     }
@@ -140,17 +144,21 @@ function simplelog(options) {
 
     if (colorize) data.unshift('\x1B[0m');
 
-    if      (logLevel <= DEBUG) data.unshift('DEBUG');
+    if      (logLevel <= TRACE) data.unshift('TRACE');
+    else if (logLevel <= DEBUG) data.unshift('DEBUG');
     else if (logLevel <= INFO)  data.unshift(' INFO');
     else if (logLevel <= WARN)  data.unshift(' WARN');
     else if (logLevel <= ERROR) data.unshift('ERROR');
+    else if (logLevel <= FATAL) data.unshift('FATAL');
     else                        data.unshift('  LOG');
 
     if (colorize === true) {
-      if      (logLevel <= DEBUG) data.unshift('\x1B[38;5;33m');
+      if      (logLevel <= TRACE) data.unshift('\x1B[38;5;30m');
+      else if (logLevel <= DEBUG) data.unshift('\x1B[38;5;33m');
       else if (logLevel <= INFO)  data.unshift('\x1B[38;5;76m');
       else if (logLevel <= WARN)  data.unshift('\x1B[38;5;142m');
       else if (logLevel <= ERROR) data.unshift('\x1B[38;5;167m');
+      else if (logLevel <= FATAL) data.unshift('\x1B[38;5;160m');
       else                        data.unshift('\x1B[38;5;44m');
     }
 
@@ -159,10 +167,12 @@ function simplelog(options) {
 
   // Return our logging function
   var logger   = function log()   { emit(LOG,   arguments) }
+  logger.trace = function trace() { emit(TRACE, arguments) }
   logger.debug = function debug() { emit(DEBUG, arguments) }
   logger.info  = function info()  { emit(INFO,  arguments) }
   logger.warn  = function warn()  { emit(WARN,  arguments) }
   logger.error = function error() { emit(ERROR, arguments) }
+  logger.fatal = function fatal() { emit(FATAL, arguments) }
   return logger;
 
 }
@@ -173,10 +183,12 @@ exports.format = format;
 Object.defineProperties(exports, {
   // Levels
   'ALL':   { configurable: false, enumerable: true, writable: false, value: ALL   },
+  'TRACE': { configurable: false, enumerable: true, writable: false, value: TRACE },
   'DEBUG': { configurable: false, enumerable: true, writable: false, value: DEBUG },
   'INFO':  { configurable: false, enumerable: true, writable: false, value: INFO  },
   'WARN':  { configurable: false, enumerable: true, writable: false, value: WARN  },
   'ERROR': { configurable: false, enumerable: true, writable: false, value: ERROR },
+  'FATAL': { configurable: false, enumerable: true, writable: false, value: FATAL },
   'OFF':   { configurable: false, enumerable: true, writable: false, value: OFF   },
   // Defaults
   'defaultLog': {
@@ -189,7 +201,7 @@ Object.defineProperties(exports, {
     configurable: false,
     enumerable: true,
     get: function() { return defaultLevel },
-    set: function(level) { defaultLevel = Number(level) || ERROR }
+    set: function(level) { defaultLevel = Number(level) || INFO }
   },
   'defaultColorize': {
     configurable: false,
