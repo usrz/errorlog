@@ -49,12 +49,14 @@ The _error log_ can be constructed with the following options:
   * if unspecified this will default to `process.stderr`.
 * `category`: a category name that will be inserted in the message to log.
 * `level`: the minimum level to log messages at
+  * `errorlog.TRACE` or `0`: really low priority messages.
   * `errorlog.DEBUG` or `100`: debugging messages.
   * `errorlog.INFO`  or `200`: informational messages _(default)_.
   * `errorlog.WARN`  or `300`: warning messages.
   * `errorlog.ERROR` or `400`: error messages.
+  * `errorlog.FATAL` or `500`: fatel error messages.
   * `errorlog.ALL` or any number smaller than `100`: everything is logged.
-  * `errorlog.OFF` or any number greater than `400`: disable logging.
+  * `errorlog.OFF` or any number greater than `500`: disable logging.
 
 Options can be specified at construction wrapped in a simple object:
 
