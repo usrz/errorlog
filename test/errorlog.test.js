@@ -48,6 +48,11 @@ describe('Simple log test', function() {
     expect(stream.check()).to.equal('  LOG - a simple message to log');
   });
 
+  it('should log a simple exception', function() {
+    log(new Error('simple error'));
+    expect(stream.check()).to.match(/^  LOG - simple error\n  Error: simple error\n    at/m);
+  });
+
   it('should log a formatted message', function() {
     log('number %d string %s json %j percent % and %% borked %x nan %d end', 123.456, 'foobar', { hello: 'world' }, 'foo' );
     expect(stream.check()).to.equal('  LOG - number 123.456 string foobar json {"hello":"world"} percent % and % borked %x nan NaN end');
