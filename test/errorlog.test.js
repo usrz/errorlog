@@ -2,6 +2,8 @@
 
 var expect = require('chai').expect;
 var simplelog = require('../src/errorlog.js');
+// No color test!
+simplelog.defaultColorize = false;
 
 // A regular expression matching an ISO date
 var expr = /^[\d]{4}-[\d]{2}-[\d]{2}T[\d]{2}:[\d]{2}:[\d]{2}\.[\d]{3}Z - (.*)/;
