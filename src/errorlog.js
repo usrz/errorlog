@@ -7,6 +7,12 @@ function format() {
   var msg = '';
   var ptr = 0;
 
+  // Only one argument, the error...
+  if ((arg.length == 1) && util.isError(arg[0])) {
+    var error = arg[0];
+    return format(error.message || error.toString(), error);
+  }
+
   // Process the format string and parameters
   if (util.isString(arg[0])) {
     var len = arg.length - 1;
@@ -38,7 +44,7 @@ function format() {
     }
 
     // Dump stack traces for every exception
-    if (arg[ptr] instanceof Error) {
+    if (util.isError(arg[ptr])) {
       msg += '\n  ' + arg[ptr].stack;
     }
   }
