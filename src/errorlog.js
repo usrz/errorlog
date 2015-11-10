@@ -67,11 +67,11 @@ var LOG   = OFF - 1; // internal only
 // Our default log function, shared where not overridden
 var defaultLog = wrap(process.stderr);
 var defaultLevel = INFO;
-var defaultColorize = true;
+var defaultColorize = process.stderr.isTTY == true;
 
 function wrap(stream) {
   if (util.isFunction(stream.write)) {
-    var colorize = ((stream == process.stderr) || (stream == process.stdout));
+    var colorize = stream.isTTY == true;
     var log = function log(message) {
       if (colorize && defaultColorize) {
         stream.write('\x1B[38;5;240m' + new Date().toISOString() + '\x1B[0m - ' + message + '\n');
