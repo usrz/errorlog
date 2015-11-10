@@ -36,7 +36,7 @@ function format() {
   for (++ ptr; ptr < arg.length; ptr ++) {
     if (arg[ptr]) try {
       var json = JSON.stringify(arg[ptr]);
-      if ((json !== '{}') || (!(arg[ptr] instanceof Error))) {
+      if ((json !== '{}') && (! util.isError(arg[ptr]))) {
         msg += '\n  >>> ' + json;
       }
     } catch (error) {
@@ -90,7 +90,7 @@ function wrap(stream) {
 };
 
 // From level to number
-function parseLevel(level) {
+function parseLevel(level, defaultLevel) {
   if (typeof level === 'number') return level;
 
   if (typeof level === 'string') {
@@ -111,8 +111,8 @@ function parseLevel(level) {
     if (string == 'OFF')   return OFF;
   }
 
-  // Still here? Default, info
-  return null;
+  // Still here? Default...
+  return defaultLevel;
 }
 
 // Simple log emitter
@@ -141,7 +141,7 @@ function simplelog(options) {
   // Object: may contain "logger" and "category"
   else if (util.isObject(options)) {
     if (options.category) category = String(options.category) || null;
-    if (options.level) level = parseLevel(options.level) || null;
+    if (options.level) level = parseLevel(options.level, null);
     if (options.logger) log = wrap(options.logger);
   }
 
@@ -233,7 +233,7 @@ Object.defineProperties(exports, {
     configurable: false,
     enumerable: true,
     get: function() { return defaultLevel },
-    set: function(level) { defaultLevel = parseLevel(level) || INFO }
+    set: function(level) { defaultLevel = parseLevel(level, INFO) }
   },
   'defaultColorize': {
     configurable: false,
