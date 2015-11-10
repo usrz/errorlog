@@ -89,6 +89,32 @@ function wrap(stream) {
   }
 };
 
+// From level to number
+function parseLevel(level) {
+  if (typeof level === 'number') return level;
+
+  if (typeof level === 'string') {
+
+    // Parse the number
+    var number = Number(level);
+    if (! Number.isNaN(number)) return number;
+
+    // Normalize the string
+    var string = level.toUpperCase().trim();
+    if (string == 'ALL')   return ALL;
+    if (string == 'TRACE') return TRACE;
+    if (string == 'DEBUG') return DEBUG;
+    if (string == 'INFO')  return INFO;
+    if (string == 'WARN')  return WARN;
+    if (string == 'ERROR') return ERROR;
+    if (string == 'FATAL') return FATAL;
+    if (string == 'OFF')   return OFF;
+  }
+
+  // Still here? Default, info
+  return null;
+}
+
 // Simple log emitter
 function simplelog(options) {
   options = options || {};
@@ -115,7 +141,7 @@ function simplelog(options) {
   // Object: may contain "logger" and "category"
   else if (util.isObject(options)) {
     if (options.category) category = String(options.category) || null;
-    if (options.level) level = Number(options.level) || null;
+    if (options.level) level = parseLevel(options.level) || null;
     if (options.logger) log = wrap(options.logger);
   }
 
@@ -136,13 +162,13 @@ function simplelog(options) {
       if (colorize) data.unshift('\x1B[0m');
       data.unshift(category);
       if (colorize) {
-      if      (logLevel <= TRACE) data.unshift('\x1B[38;5;23;4m');
-      else if (logLevel <= DEBUG) data.unshift('\x1B[38;5;25;4m');
-      else if (logLevel <= INFO)  data.unshift('\x1B[38;5;70;4m');
-      else if (logLevel <= WARN)  data.unshift('\x1B[38;5;100;4m');
-      else if (logLevel <= ERROR) data.unshift('\x1B[38;5;131;4m');
-      else if (logLevel <= FATAL) data.unshift('\x1B[38;5;124;4m');
-      else                        data.unshift('\x1B[38;5;37;4m');
+        if      (logLevel <= TRACE) data.unshift('\x1B[38;5;23;4m');
+        else if (logLevel <= DEBUG) data.unshift('\x1B[38;5;25;4m');
+        else if (logLevel <= INFO)  data.unshift('\x1B[38;5;70;4m');
+        else if (logLevel <= WARN)  data.unshift('\x1B[38;5;100;4m');
+        else if (logLevel <= ERROR) data.unshift('\x1B[38;5;131;4m');
+        else if (logLevel <= FATAL) data.unshift('\x1B[38;5;124;4m');
+        else                        data.unshift('\x1B[38;5;37;4m');
       }
     }
 
@@ -207,7 +233,7 @@ Object.defineProperties(exports, {
     configurable: false,
     enumerable: true,
     get: function() { return defaultLevel },
-    set: function(level) { defaultLevel = Number(level) || INFO }
+    set: function(level) { defaultLevel = parseLevel(level) || INFO }
   },
   'defaultColorize': {
     configurable: false,
