@@ -34,6 +34,7 @@ describe('Simple log test', function() {
   it('should expose some basic properties', function() {
     expect(simplelog).to.be.a('function');
     expect(simplelog.ALL  ).to.equal( -1);
+    expect(simplelog.TRACE).to.equal(  0);
     expect(simplelog.DEBUG).to.equal(100);
     expect(simplelog.INFO ).to.equal(200);
     expect(simplelog.WARN ).to.equal(300);
@@ -128,7 +129,7 @@ describe('Simple log test', function() {
   it('should honor the ALL level', function() {
     var data = [];
     var append = function(more) { data.push(more) };
-    var logger = simplelog({level: simplelog.ALL, logger: append});
+    var logger = simplelog({level: 'all', logger: append});
     logger.debug('debug');
     logger.info ('info');
     logger.warn ('warn');
@@ -140,7 +141,7 @@ describe('Simple log test', function() {
   it('should honor the DEBUG level', function() {
     var data = [];
     var append = function(more) { data.push(more) };
-    var logger = simplelog({level: simplelog.DEBUG, logger: append});
+    var logger = simplelog({level: 'debug', logger: append});
     logger.debug('debug');
     logger.info ('info');
     logger.warn ('warn');
@@ -152,7 +153,7 @@ describe('Simple log test', function() {
   it('should honor the INFO level', function() {
     var data = [];
     var append = function(more) { data.push(more) };
-    var logger = simplelog({level: simplelog.INFO, logger: append});
+    var logger = simplelog({level: 'info', logger: append});
     logger.debug('debug');
     logger.info ('info');
     logger.warn ('warn');
@@ -164,7 +165,7 @@ describe('Simple log test', function() {
   it('should honor the WARN level', function() {
     var data = [];
     var append = function(more) { data.push(more) };
-    var logger = simplelog({level: simplelog.WARN, logger: append});
+    var logger = simplelog({level: 'warn', logger: append});
     logger.debug('debug');
     logger.info ('info');
     logger.warn ('warn');
@@ -176,7 +177,7 @@ describe('Simple log test', function() {
   it('should honor the ERROR level', function() {
     var data = [];
     var append = function(more) { data.push(more) };
-    var logger = simplelog({level: simplelog.ERROR, logger: append});
+    var logger = simplelog({level: 'error', logger: append});
     logger.debug('debug');
     logger.info ('info');
     logger.warn ('warn');
@@ -188,7 +189,7 @@ describe('Simple log test', function() {
   it('should honor the OFF level', function() {
     var data = [];
     var append = function(more) { data.push(more) };
-    var logger = simplelog({level: simplelog.OFF, logger: append});
+    var logger = simplelog({level: 'off', logger: append});
     logger.debug('debug');
     logger.info ('info');
     logger.warn ('warn');
