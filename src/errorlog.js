@@ -199,6 +199,7 @@ function simplelog(options) {
 
   // Return our logging function
   var logger   = function log()   { emit(LOG,   arguments) }
+  logger.log   = logger; // Keep for compatibility w/ console...
   logger.trace = function trace() { emit(TRACE, arguments) }
   logger.debug = function debug() { emit(DEBUG, arguments) }
   logger.info  = function info()  { emit(INFO,  arguments) }

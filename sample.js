@@ -14,6 +14,7 @@ log1.info('Informational message');
 log1.warn('Some sort of warning');
 log1.error('Something is wrong...');
 log1.fatal('Something is really REALLY wrong...');
+log1.log('This is a normal log');
 
 console.log('\n... When a category is specified...\n');
 
@@ -26,6 +27,7 @@ log2.info('Informational message');
 log2.warn('Some sort of warning');
 log2.error('Something is wrong...');
 log2.fatal('Something is really REALLY wrong...');
+log2.log('This is a normal log');
 
 console.log('\n... Boring output with defaultColorize = false...\n');
 
@@ -38,5 +40,6 @@ log2.info('Informational message');
 log2.warn('Some sort of warning');
 log2.error('Something is wrong...');
 log2.fatal('Something is really REALLY wrong...');
+log2.log('This is a normal log');
 
 console.log('\n... There you go, all done...\n');
