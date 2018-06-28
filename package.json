@@ -1,7 +1,7 @@
 {
   "name": "errorlog",
   "description": "Yet another logger for Node",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "author": {
     "name": "Pier Fumagalli",
     "email": "pier@usrz.com"
@@ -15,7 +15,7 @@
   "scripts": {
     "test": "gulp"
   },
-  "homepage": "https://github.com/usrz/js-express-errorlog",
+  "homepage": "https://github.com/usrz/js-errorlog",
   "keywords": [
     "error",
     "errorlog",
