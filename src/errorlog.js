@@ -34,7 +34,7 @@ function format() {
 
   // Process anything that was not in the format
   for (++ ptr; ptr < arg.length; ptr ++) {
-    if (arg[ptr]) try {
+    if (typeof arg[ptr] !== 'undefined') try {
       var json = JSON.stringify(arg[ptr]);
       if ((json !== '{}') && (! util.isError(arg[ptr]))) {
         msg += '\n  >>> ' + json;
