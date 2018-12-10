@@ -6,4 +6,4 @@ gulp.task('mocha', function () {
     .pipe(mocha({ reporter: 'spec' }));
 });
 
-gulp.task('default', [ 'mocha' ]);
+gulp.task('default', gulp.parallel([ 'mocha' ]));
