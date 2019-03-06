@@ -1,7 +1,7 @@
 {
   "name": "errorlog",
   "description": "Yet another logger for Node",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "author": {
     "name": "Pier Fumagalli",
     "email": "pier@usrz.com"
