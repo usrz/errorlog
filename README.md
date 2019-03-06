@@ -98,6 +98,9 @@ log('A message to log');
 The default for output will be `process.stderr` and minimum level `ERROR`:
 these values will be applied only to loggers created **after** setting them.
 
+The default level can also be specified by using the `LOG_LEVEL` environment
+variable.
+
 
 
 Logging
