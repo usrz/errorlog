@@ -66,7 +66,7 @@ var LOG   = OFF - 1; // internal only
 
 // Our default log function, shared where not overridden
 var defaultLog = wrap(process.stderr);
-var defaultLevel = INFO;
+var defaultLevel = parseLevel(process.env.LOG_LEVEL, INFO);
 var defaultColorize = process.stderr.isTTY == true;
 
 function wrap(stream) {
