@@ -1,7 +1,7 @@
 {
   "name": "errorlog",
   "description": "Yet another logger for Node",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "author": {
     "name": "Pier Fumagalli",
     "email": "pier@usrz.com"
@@ -24,8 +24,8 @@
   ],
   "devDependencies": {
     "chai": "^4.2.0",
-    "gulp": "^4.0.0",
-    "gulp-mocha": "^6.0.0"
+    "gulp": "^4.0.2",
+    "gulp-mocha": "^7.0.1"
   },
   "dependencies": {}
 }
